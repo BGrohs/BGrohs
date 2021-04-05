@@ -1,0 +1,5 @@
+- 👋 Hi, I’m @BGrohs
+- 👀 I’m interested in 3D printing, designing and software development
+- 🌱 I’m currently learning nothing
+- 💞️ I’m looking to collaborate on what ever I'm interested
+- 📫 How to reach me - just do it!
