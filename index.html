@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trip Route Planner</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-sA+e2at9m0f71TnU5G4s+6U86p2zU1hbY5mS0h3yGxo="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Trip Route Planner</h1>
+      <p>
+        Add a starting point and points of interest to explore different ways to
+        connect them by car, on foot, or by air.
+      </p>
+    </header>
+    <main>
+      <section class="controls">
+        <div class="control-card">
+          <h2>Locations</h2>
+          <div class="field-group">
+            <label for="start-address">Start location</label>
+            <div class="inline">
+              <input
+                type="text"
+                id="start-address"
+                placeholder="Search for a starting address"
+              />
+              <button id="start-search" type="button">Search</button>
+            </div>
+            <button id="use-map-start" type="button">
+              Select on map
+            </button>
+          </div>
+          <div class="field-group">
+            <label for="poi-address">Point of interest</label>
+            <div class="inline">
+              <input
+                type="text"
+                id="poi-address"
+                placeholder="Search for a point of interest"
+              />
+              <button id="poi-search" type="button">Add</button>
+            </div>
+            <button id="use-map-poi" type="button">Add from map</button>
+          </div>
+          <p id="map-hint" class="hint" aria-live="polite"></p>
+          <div class="field-group">
+            <label>Points of interest</label>
+            <ul id="poi-list"></ul>
+          </div>
+        </div>
+        <div class="control-card">
+          <h2>Routes</h2>
+          <p>
+            Choose which routes to display. The flight path shows a geodesic arc
+            between each stop.
+          </p>
+          <div class="toggle">
+            <input type="checkbox" id="toggle-driving" checked />
+            <label for="toggle-driving">Driving route</label>
+          </div>
+          <div class="toggle">
+            <input type="checkbox" id="toggle-walking" checked />
+            <label for="toggle-walking">Walking / subway route</label>
+          </div>
+          <div class="toggle">
+            <input type="checkbox" id="toggle-flight" checked />
+            <label for="toggle-flight">Flight path</label>
+          </div>
+          <button id="clear-pois" type="button" class="danger">
+            Clear points of interest
+          </button>
+        </div>
+      </section>
+      <section class="map-container">
+        <div id="map"></div>
+      </section>
+    </main>
+    <footer>
+      <p>
+        Routing powered by the open-source OSRM API. Geocoding via OpenStreetMap
+        Nominatim.
+      </p>
+    </footer>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-o9N1j7kGStb0P94p42Wg9WOx1sGkGWDKzrHf2z8IiQY="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.geodesic/1.2.1/leaflet.geodesic.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
