@@ -143,6 +143,11 @@ def main():
 
     print(f"OK {b['date']}: {n_items} items, {n_sources} sources, {total_words} spoken words (~{minutes} min)")
     print(f"Script: {SCRIPTS / (title + '.txt')}")
+    if total_words > 9000:
+        warnings.append(f"LENGTH: {total_words} spoken words (~{minutes} min) is over the 9,000 word cap. "
+                        "Shorten the notable items and trim the leads until it is between 7,000 and 9,000.")
+    elif total_words < 6000:
+        warnings.append(f"LENGTH: only {total_words} spoken words (~{minutes} min). Go deeper on the lead stories.")
     if warnings:
         print(f"\n{len(warnings)} lint warning(s) in spoken text:")
         for w in warnings:

@@ -12,5 +12,8 @@ Write today's Daily Morning Briefing. Date: {{DATE}} (Europe/Berlin).
 3. To keep your context small, you may research the sections in parallel with subagents.
 4. Write `briefing/data/{{DATE}}.json`, then run `python3 briefing/build.py briefing/data/{{DATE}}.json`.
    Fix every error and lint warning in the spoken text, and rerun until it is clean.
+   The length is a hard limit: 7,000 to 9,000 spoken words (about 50 to 60 minutes).
+   If the build reports more, shorten the notable items first, then the leads. Do not
+   leave it long. Fewer, better stories beat more stories.
 5. Do not run git, curl or any publishing step. Finish with one line: the number of
    stories and the estimated minutes.
