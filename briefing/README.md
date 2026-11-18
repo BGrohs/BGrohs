@@ -11,3 +11,15 @@ Daily 5 a.m. briefing on critical vulnerabilities, cyberattacks, AI, tech, busin
 Voice it with your own clone:
 
     python3 podcast_pipeline.py --script "#2026-11-19 - Morning Briefing Thursday November 19 2026.txt"
+
+## Running on your own server (Tailscale)
+
+    git clone -b claude/daily-morning-briefing-yjrq7t https://github.com/BGrohs/BGrohs.git ~/morning-briefing
+    cd ~/morning-briefing
+    bash briefing/server/setup.sh        # config, systemd timer (04:00 Europe/Berlin), tailscale serve
+    nano briefing/server/config.env      # SITE_URL from `tailscale serve status`, optional NTFY_TOKEN
+    briefing/server/run.sh               # first test run, log in briefing/work/<date>.log
+
+`collect.py` pulls ~35 RSS feeds plus the CISA KEV catalog (`server/feeds.txt`), Claude Code
+(`claude -p`, subscription login) writes the edition from that digest, and `run.sh` builds,
+copies the site to `SITE_DIR`, commits, and sends the ntfy push.

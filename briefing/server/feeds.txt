@@ -1,0 +1,38 @@
+# section | name | feed url
+# The collector skips feeds that fail and lists them in its report. Edit freely.
+
+vulns    | CISA Advisories        | https://www.cisa.gov/cybersecurity-advisories/all.xml
+vulns    | BleepingComputer       | https://www.bleepingcomputer.com/feed/
+vulns    | The Hacker News        | https://feeds.feedburner.com/TheHackersNews
+vulns    | SecurityWeek           | https://www.securityweek.com/feed/
+vulns    | Help Net Security      | https://www.helpnetsecurity.com/feed/
+vulns    | SANS ISC               | https://isc.sans.edu/rssfeed_full.xml
+vulns    | Microsoft MSRC Blog    | https://msrc.microsoft.com/blog/feed
+vulns    | CERT.at                | https://cert.at/cert-at.de.all.rss_2.0.xml
+vulns    | heise Security         | https://www.heise.de/security/rss/news-atom.xml
+vulns    | Google Project Zero    | https://googleprojectzero.blogspot.com/feeds/posts/default
+attacks  | The Record             | https://therecord.media/feed
+attacks  | Krebs on Security      | https://krebsonsecurity.com/feed/
+attacks  | Dark Reading           | https://www.darkreading.com/rss.xml
+attacks  | Cisco Talos            | https://blog.talosintelligence.com/rss/
+attacks  | Unit 42                | https://unit42.paloaltonetworks.com/feed/
+ai       | OpenAI News            | https://openai.com/news/rss.xml
+ai       | Google AI Blog         | https://blog.google/technology/ai/rss/
+ai       | Hugging Face Blog      | https://huggingface.co/blog/feed.xml
+ai       | MIT Technology Review  | https://www.technologyreview.com/topic/artificial-intelligence/feed
+ai       | TechCrunch AI          | https://techcrunch.com/category/artificial-intelligence/feed/
+ai       | VentureBeat AI         | https://venturebeat.com/category/ai/feed/
+ai       | Simon Willison         | https://simonwillison.net/atom/everything/
+tech     | The Verge              | https://www.theverge.com/rss/index.xml
+tech     | Ars Technica           | https://feeds.arstechnica.com/arstechnica/index
+tech     | TechCrunch             | https://techcrunch.com/feed/
+tech     | Wired                  | https://www.wired.com/feed/rss
+tech     | The Register           | https://www.theregister.com/headlines.atom
+tech     | heise online           | https://www.heise.de/rss/heise-atom.xml
+tech     | Golem                  | https://rss.golem.de/rss.php?feed=ATOM1.0
+tech     | Hacker News (300+)     | https://hnrss.org/frontpage?points=300
+business | CNBC Technology        | https://www.cnbc.com/id/19854910/device/rss/rss.html
+business | Bloomberg Technology   | https://feeds.bloomberg.com/technology/news.rss
+business | Financial Times Tech   | https://www.ft.com/technology?format=rss
+policy   | Euractiv Tech          | https://www.euractiv.com/sections/tech/feed/
+policy   | netzpolitik.org        | https://netzpolitik.org/feed/
