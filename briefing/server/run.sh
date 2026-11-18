@@ -2,6 +2,7 @@
 # Daily run: collect feeds -> Claude writes the edition -> build -> publish to SITE_DIR -> git -> ntfy.
 # Started by the systemd timer (see setup.sh). Safe to run by hand: briefing/server/run.sh
 set -uo pipefail
+export GIT_TERMINAL_PROMPT=0   # never block on a password prompt
 
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO"
@@ -25,6 +26,12 @@ notify() {  # notify <title> <message> [priority] [tags]
 fail() { echo "FAILED: $1"; notify "Morning Briefing failed" "$1. Log: $REPO/$LOG" high warning; exit 1; }
 
 git pull -q --ff-only || echo "git pull failed, continuing with local copy"
+
+# FORCE=1 briefing/server/run.sh rewrites today's edition even if it already exists.
+if [ "${FORCE:-0}" = "1" ] && [ -f "briefing/data/$DATE.json" ]; then
+  mv "briefing/data/$DATE.json" "$WORK/$DATE.previous.json"
+  echo "FORCE: moved existing edition to $WORK/$DATE.previous.json"
+fi
 
 python3 briefing/collect.py --hours 30 --out "$DIGEST" || fail "Feed collection failed"
 
