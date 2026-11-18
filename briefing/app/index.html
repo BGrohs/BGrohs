@@ -1,0 +1,408 @@
+<title>Morning Briefing</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column; a sticky "transmitter" player on top; sections stacked as dispatch lists with severity stripes. Pre-dawn palette: ink blue + first-light amber. */
+:root {
+  --bg: #eef1f5;
+  --surface: #ffffff;
+  --surface-2: #e3e8ef;
+  --fg: #141b26;
+  --muted: #5a6577;
+  --line: #d3dae4;
+  --accent: #b5650d;
+  --accent-ink: #ffffff;
+  --crit: #c62a2a;
+  --high: #c76a00;
+  --notable: #2f62b8;
+  --crit-bg: #fbe9e9;
+  --high-bg: #fdf0df;
+  --notable-bg: #e7eefa;
+  --now: #fff5e6;
+  --f-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1220; --surface: #141c2d; --surface-2: #1c2639; --fg: #e6eaf1; --muted: #93a0b5;
+    --line: #26314a; --accent: #f0a944; --accent-ink: #1a1206; --crit: #ff6b6b; --high: #ffa94a;
+    --notable: #7aa7ff; --crit-bg: #3a1a20; --high-bg: #3a2a14; --notable-bg: #182a4a; --now: #2a2414;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1220; --surface: #141c2d; --surface-2: #1c2639; --fg: #e6eaf1; --muted: #93a0b5;
+  --line: #26314a; --accent: #f0a944; --accent-ink: #1a1206; --crit: #ff6b6b; --high: #ffa94a;
+  --notable: #7aa7ff; --crit-bg: #3a1a20; --high-bg: #3a2a14; --notable-bg: #182a4a; --now: #2a2414;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 20px 64px; display: grid; gap: 28px; }
+a { color: var(--accent); }
+button, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Masthead */
+.mast { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.mast h1 { font-family: var(--f-display); font-stretch: 78%; font-weight: 800; font-size: clamp(2rem, 7vw, 2.9rem); line-height: 1; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.mast .date { font-family: var(--f-mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.daysel { display: flex; align-items: center; gap: 8px; }
+.daysel label { font-size: .8rem; color: var(--muted); }
+select { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; max-width: 100%; }
+
+/* Player */
+.player {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px; display: grid; gap: 10px; box-shadow: 0 6px 24px -14px rgba(0,0,0,.35);
+}
+.prow { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.play {
+  flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center;
+}
+.play svg { width: 22px; height: 22px; fill: currentColor; }
+.ctl { flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; display: grid; place-items: center; }
+.ctl svg { width: 16px; height: 16px; fill: currentColor; }
+.nowtxt { min-width: 0; flex: 1; }
+.nowtxt .k { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.nowtxt .t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: .82rem; color: var(--muted); }
+.opts label { display: flex; align-items: center; gap: 6px; }
+.opts select { font-size: .82rem; padding: 4px 6px; }
+#voice { max-width: 210px; }
+.opts .time { margin-left: auto; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+/* At a glance */
+.glance { display: grid; gap: 8px; }
+.eyebrow { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.glance ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; font-weight: 500; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.jump { display: flex; flex-wrap: wrap; gap: 6px; }
+.jump a { text-decoration: none; font-size: .82rem; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--fg); }
+
+/* Sections and items */
+section.sec { display: grid; gap: 12px; scroll-margin-top: 170px; }
+section.sec > h2 { font-family: var(--f-display); font-stretch: 82%; font-weight: 750; font-size: 1.45rem; margin: 0; display: flex; align-items: baseline; gap: 10px; text-wrap: balance; }
+section.sec > h2 .n { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); font-weight: 500; }
+.item {
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--sev, var(--line));
+  border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; scroll-margin-top: 170px;
+}
+.item.now { background: var(--now); }
+.item[data-sev="critical"] { --sev: var(--crit); --sevbg: var(--crit-bg); }
+.item[data-sev="high"] { --sev: var(--high); --sevbg: var(--high-bg); }
+.item[data-sev="notable"] { --sev: var(--notable); --sevbg: var(--notable-bg); }
+.ihead { display: flex; gap: 10px; align-items: start; justify-content: space-between; }
+.item h3 { margin: 0; font-size: 1.05rem; line-height: 1.35; font-weight: 600; text-wrap: balance; min-width: 0; }
+.sev { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--sevbg); color: var(--sev); white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tags span { font-family: var(--f-mono); font-size: .72rem; padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); }
+.item p { margin: 0; overflow-wrap: anywhere; }
+.why { color: var(--muted); }
+.why b, .action b { color: var(--fg); font-weight: 600; }
+.action { padding: 8px 10px; border-radius: 6px; background: var(--surface-2); font-size: .93rem; }
+.ifoot { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .85rem; }
+.srcs { display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; }
+.srcs a { overflow-wrap: anywhere; }
+.linkbtn { background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); font-size: .85rem; text-decoration: underline; text-underline-offset: 2px; }
+.ifoot .linkbtn:first-child { margin-left: auto; }
+.full { border-top: 1px dashed var(--line); padding-top: 8px; display: grid; gap: 8px; color: var(--fg); }
+
+/* Footer tools */
+.tools { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 18px; font-size: .9rem; color: var(--muted); }
+.tools .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; cursor: pointer; color: var(--fg); }
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; padding: 28px 20px; display: grid; gap: 6px; }
+.empty h2 { font-family: var(--f-display); font-stretch: 82%; margin: 0; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: .88rem; z-index: 20; }
+@media (max-width: 480px) {
+  #voice { max-width: 150px; }
+  .opts .time { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <div class="date" id="dateline">Daily · Tech · AI · Security</div>
+      <h1>Morning Briefing</h1>
+    </div>
+    <div class="daysel">
+      <label for="day">Edition</label>
+      <select id="day" aria-label="Choose edition"></select>
+    </div>
+  </header>
+
+  <div class="player" id="player" hidden>
+    <div class="prow">
+      <button class="ctl" id="prev" aria-label="Previous story"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="play" id="play" aria-label="Read aloud"><svg viewBox="0 0 24 24" id="playicon"><path d="M7 4v16l13-8z"/></svg></button>
+      <button class="ctl" id="next" aria-label="Next story"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+      <div class="nowtxt"><div class="k" id="nowk">Ready</div><div class="t" id="nowt">Tap play to listen</div></div>
+    </div>
+    <div class="bar"><i id="barfill"></i></div>
+    <div class="opts">
+      <label for="voice">Voice <select id="voice"></select></label>
+      <label for="rate">Speed <select id="rate">
+        <option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.1">1.1×</option>
+        <option value="1.2">1.2×</option><option value="1.35">1.35×</option><option value="1.5">1.5×</option>
+      </select></label>
+      <label for="follow"><input type="checkbox" id="follow" checked> Follow along</label>
+      <span class="time" id="timeleft"></span>
+    </div>
+  </div>
+
+  <main id="main" class="wrap" style="padding:0">
+    <div class="empty" id="empty">
+      <p class="eyebrow">No edition yet</p>
+      <h2>The first briefing arrives around 5:00</h2>
+      <p>Every morning this page fills with the night's critical vulnerabilities, major attacks, AI and tech news, each with sources. Press play to have it read aloud.</p>
+    </div>
+  </main>
+
+  <footer class="tools" id="tools" hidden>
+    <div class="row">
+      <button class="btn" id="copyf5">Copy F5-TTS script</button>
+      <span>Plain text in the podcast_pipeline.py format, for your own voice clone.</span>
+    </div>
+    <p style="margin:0">Read-aloud uses your device's built-in voices. The screen stays on while playing; locking the phone stops playback on most devices.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmtDate = iso => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const toast = msg => { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); };
+
+  let index = null, brief = null, queue = [], pos = 0, playing = false, wakeLock = null, voices = [];
+  const synth = window.speechSynthesis;
+
+  /* ---------- data ---------- */
+  async function loadIndex() {
+    try { const r = await fetch("data/index.json", { cache: "no-store" }); if (!r.ok) throw 0; index = await r.json(); }
+    catch { index = { briefings: [] }; }
+    const sel = $("#day");
+    sel.innerHTML = index.briefings.map(b => `<option value="${esc(b.date)}">${esc(fmtDate(b.date))}</option>`).join("") || `<option>No editions yet</option>`;
+    sel.disabled = !index.briefings.length;
+    const fromHash = (location.hash.match(/^#d-(\d{4}-\d{2}-\d{2})$/) || [])[1];
+    const date = index.briefings.some(b => b.date === fromHash) ? fromHash : index.latest;
+    if (date) await loadDay(date);
+  }
+
+  async function loadDay(date) {
+    stop();
+    let b;
+    try { const r = await fetch(`data/${date}.json`, { cache: "no-store" }); if (!r.ok) throw 0; b = await r.json(); }
+    catch { toast("Could not load this edition"); return; }
+    brief = b;
+    $("#day").value = date;
+    if (location.hash !== `#d-${date}`) history.replaceState(null, "", `#d-${date}`);
+    render();
+    buildQueue();
+    const saved = store.get("pos:" + date, 0);
+    pos = Math.min(saved, queue.length - 1);
+    updateNow();
+  }
+
+  /* ---------- render ---------- */
+  function render() {
+    const b = brief;
+    $("#dateline").textContent = fmtDate(b.date);
+    const st = b.stats || {};
+    const secs = b.sections.filter(s => s.items.length);
+    const crit = secs.reduce((a, s) => a + s.items.filter(i => i.severity === "critical").length, 0);
+    $("#main").innerHTML = `
+      <div class="glance">
+        <p class="eyebrow">Top stories</p>
+        <ol>${b.headlines.map(h => `<li>${esc(h)}</li>`).join("")}</ol>
+        <div class="stats">
+          <span>${st.items ?? "–"} stories</span><span>${st.sources ?? "–"} sources</span>
+          <span>~${st.minutes ?? "–"} min listening</span>
+          ${crit ? `<span style="color:var(--crit)">${crit} critical</span>` : ""}
+        </div>
+        <nav class="jump" aria-label="Sections">${secs.map(s => `<a href="#d-${esc(b.date)}" data-jump="${esc(s.id)}">${esc(s.title)} · ${s.items.length}</a>`).join("")}</nav>
+      </div>
+      ${secs.map(s => `
+        <section class="sec" id="sec-${esc(s.id)}">
+          <h2>${esc(s.title)} <span class="n">${s.items.length}</span></h2>
+          ${s.items.map(it => `
+            <article class="item" id="it-${esc(it.id)}" data-sev="${esc(it.severity)}">
+              <div class="ihead"><h3>${esc(it.headline)}</h3><span class="sev">${esc(it.severity)}</span></div>
+              ${it.tags?.length ? `<div class="tags">${it.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+              <p>${esc(it.summary)}</p>
+              <p class="why"><b>Why it matters:</b> ${esc(it.why)}</p>
+              ${it.action ? `<p class="action"><b>Action:</b> ${esc(it.action)}</p>` : ""}
+              <div class="ifoot">
+                <div class="srcs">${it.sources.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>`).join("")}</div>
+                <button class="linkbtn" data-full="${esc(it.id)}">Full story</button>
+                <button class="linkbtn" data-from="${esc(it.id)}">Play from here</button>
+              </div>
+              <div class="full" hidden>${it.spoken.split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("")}</div>
+            </article>`).join("")}
+        </section>`).join("")}`;
+    $("#player").hidden = false;
+    $("#tools").hidden = false;
+  }
+
+  $("#main").addEventListener("click", e => {
+    const j = e.target.closest("[data-jump]");
+    if (j) { e.preventDefault(); $("#sec-" + j.dataset.jump)?.scrollIntoView({ behavior: "smooth" }); return; }
+    const f = e.target.closest("[data-full]");
+    if (f) { const box = f.closest(".item").querySelector(".full"); box.hidden = !box.hidden; f.textContent = box.hidden ? "Full story" : "Hide story"; return; }
+    const p = e.target.closest("[data-from]");
+    if (p) { const i = queue.findIndex(q => q.item === p.dataset.from); if (i >= 0) { pos = i; start(); } }
+  });
+
+  /* ---------- speech queue ---------- */
+  // Split into sentence-sized chunks: long utterances get cut off in some browsers.
+  function chunks(text) {
+    const out = [];
+    for (const para of text.split(/\n\n+/)) {
+      const sents = para.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [para];
+      let cur = "";
+      for (const s of sents) {
+        if ((cur + s).length > 220 && cur) { out.push(cur.trim()); cur = ""; }
+        cur += s;
+      }
+      if (cur.trim()) out.push(cur.trim());
+    }
+    return out;
+  }
+  function buildQueue() {
+    const b = brief; queue = [];
+    const push = (text, label, item = null) => chunks(text).forEach(t => queue.push({ text: t, label, item }));
+    push(b.intro, "Intro");
+    for (const s of b.sections) {
+      if (!s.items.length) continue;
+      push(s.spoken_intro, s.title, s.items[0].id);
+      for (const it of s.items) push(it.spoken, it.headline, it.id);
+    }
+    push(b.outro, "Wrap-up");
+    queue.forEach(q => q.words = q.text.split(/\s+/).length);
+  }
+
+  function pickVoices() {
+    voices = synth ? synth.getVoices().filter(v => /^en(-|_|$)/i.test(v.lang)) : [];
+    const score = v => (/natural|neural|premium|enhanced|siri/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0) + (/en-(US|GB)/i.test(v.lang) ? 1 : 0) + (v.localService ? 0 : 1);
+    voices.sort((a, b) => score(b) - score(a));
+    const sel = $("#voice"), saved = store.get("voice", null);
+    sel.innerHTML = voices.map((v, i) => `<option value="${i}">${esc(v.name.replace(/^Microsoft |^Google /, ""))} (${esc(v.lang)})</option>`).join("") || `<option>Default</option>`;
+    const si = voices.findIndex(v => v.name === saved);
+    sel.value = String(si >= 0 ? si : 0);
+  }
+  if (synth) { pickVoices(); synth.onvoiceschanged = pickVoices; }
+
+  const rateSel = $("#rate");
+  rateSel.value = String(store.get("rate", 1));
+  rateSel.addEventListener("change", () => { store.set("rate", +rateSel.value); if (playing) speak(); });
+  $("#voice").addEventListener("change", () => { const v = voices[+$("#voice").value]; if (v) store.set("voice", v.name); if (playing) speak(); });
+  $("#follow").checked = store.get("follow", true);
+  $("#follow").addEventListener("change", e => store.set("follow", e.target.checked));
+
+  let uttToken = 0;
+  function speak() {
+    if (!synth) { toast("This browser cannot read aloud"); return; }
+    synth.cancel();
+    if (pos >= queue.length) { stop(); pos = 0; updateNow(); return; }
+    const q = queue[pos], token = ++uttToken;
+    const u = new SpeechSynthesisUtterance(q.text);
+    const v = voices[+$("#voice").value];
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
+    u.rate = +rateSel.value;
+    u.onend = () => { if (token !== uttToken || !playing) return; pos++; store.set("pos:" + brief.date, pos); updateNow(); speak(); };
+    u.onerror = e => { if (token !== uttToken || !playing) return; if (e.error === "interrupted" || e.error === "canceled") return; pos++; speak(); };
+    updateNow();
+    synth.speak(u);
+  }
+  async function start() {
+    if (!queue.length) return;
+    playing = true; setIcon();
+    try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {}
+    speak();
+  }
+  function stop() {
+    playing = false; uttToken++; synth?.cancel(); setIcon();
+    try { wakeLock?.release(); } catch {} wakeLock = null;
+  }
+  function setIcon() {
+    $("#playicon").innerHTML = playing ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>';
+    $("#play").setAttribute("aria-label", playing ? "Pause" : "Read aloud");
+  }
+  function jumpItem(dir) {
+    if (!queue.length) return;
+    const cur = queue[pos]?.item;
+    let i = pos;
+    if (dir > 0) { while (i < queue.length && queue[i].item === cur) i++; }
+    else {
+      // back to the start of this story, or the previous one if already at its start
+      while (i > 0 && queue[i - 1].item === cur) i--;
+      if (i === pos && i > 0) { const prevItem = queue[i - 1].item; i--; while (i > 0 && queue[i - 1].item === prevItem) i--; }
+    }
+    pos = Math.max(0, Math.min(i, queue.length - 1));
+    store.set("pos:" + brief.date, pos);
+    playing ? speak() : updateNow();
+  }
+  $("#play").addEventListener("click", () => playing ? stop() : start());
+  $("#next").addEventListener("click", () => jumpItem(1));
+  $("#prev").addEventListener("click", () => jumpItem(-1));
+  document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState === "visible" && playing && !wakeLock) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
+  });
+
+  let lastItem = null;
+  function updateNow() {
+    if (!queue.length) return;
+    const q = queue[Math.min(pos, queue.length - 1)];
+    const sec = brief.sections.find(s => s.items.some(i => i.id === q.item));
+    $("#nowk").textContent = playing ? (sec ? sec.title : q.label) : (pos ? "Paused · " + (sec ? sec.title : q.label) : "Ready");
+    $("#nowt").textContent = pos || playing ? q.label : "Tap play to listen";
+    const total = queue.reduce((a, x) => a + x.words, 0);
+    const done = queue.slice(0, pos).reduce((a, x) => a + x.words, 0);
+    $("#barfill").style.width = (100 * done / total).toFixed(1) + "%";
+    const minsLeft = Math.round((total - done) / (150 * +rateSel.value));
+    $("#timeleft").textContent = `${minsLeft} min left`;
+    if (q.item !== lastItem) {
+      document.querySelectorAll(".item.now").forEach(el => el.classList.remove("now"));
+      const el = q.item && document.getElementById("it-" + q.item);
+      if (el && (playing || pos)) { el.classList.add("now"); if (playing && $("#follow").checked) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      lastItem = q.item;
+    }
+  }
+
+  /* ---------- day switch, hash, copy ---------- */
+  $("#day").addEventListener("change", e => loadDay(e.target.value));
+  window.addEventListener("hashchange", () => {
+    const d = (location.hash.match(/^#d-(\d{4}-\d{2}-\d{2})$/) || [])[1];
+    if (d && d !== brief?.date && index?.briefings.some(b => b.date === d)) loadDay(d);
+  });
+  $("#copyf5").addEventListener("click", async () => {
+    try {
+      const r = await fetch(`scripts/${brief.date}.txt`, { cache: "no-store" });
+      if (!r.ok) throw 0;
+      const txt = await r.text();
+      await navigator.clipboard.writeText(txt);
+      toast("Script copied");
+    } catch { toast("Copy failed. The script is also in the repo under briefing/scripts."); }
+  });
+
+  loadIndex();
+})();
+</script>
